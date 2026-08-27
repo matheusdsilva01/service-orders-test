@@ -2,11 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\User;
-use Core\App;
 use Core\Authenticator;
-use Core\Database;
-use Core\Session;
 use Core\Validator;
 
 class SessionController
@@ -27,26 +23,15 @@ class SessionController
     {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $errors = [];
+        $credentialsAreValid =
+            Validator::string($email, 1, 100)
+            && Validator::email($email)
+            && Validator::string($password, 1, 255);
 
-        if (!Validator::string($email, 1, 100) || !Validator::email($email)) {
-            $errors['email'] = 'Informe um email valido.';
-        }
-
-        if (!Validator::string($password, 1, 255)) {
-            $errors['password'] = 'Informe uma senha válida.';
-        }
-
-        if ($errors) {
-            $this->renderInvalidLogin($errors, is_string($email) ? $email : '');
-            return;
-        }
-
-        if (!$this->authenticator->attempt($email, $password)) {
-            $this->renderInvalidLogin(
-                ['credentials' => 'Ops, Email ou Senha inválido'],
-                $email
-            );
+        if (!$credentialsAreValid || !$this->authenticator->attempt($email, $password)) {
+            $this->renderInvalidLogin([
+                'credentials' => 'Ops, Email ou Senha inválido'
+            ], $email);
             return;
         }
 
