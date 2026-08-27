@@ -19,6 +19,11 @@ class Session
         $_SESSION['_flash'][$key] = $value;
     }
 
+    public static function regenerate(): void
+    {
+        session_regenerate_id(true);
+    }
+
     public static function unflash(): void
     {
         unset($_SESSION['_flash']);
@@ -29,6 +34,17 @@ class Session
         $_SESSION = [];
 
         if (session_status() === PHP_SESSION_ACTIVE) {
+            $parameters = session_get_cookie_params();
+
+            setcookie(session_name(), '', [
+                'expires' => time() - 42000,
+                'path' => $parameters['path'],
+                'domain' => $parameters['domain'],
+                'secure' => $parameters['secure'],
+                'httponly' => $parameters['httponly'],
+                'samesite' => $parameters['samesite'] ?? 'Lax',
+            ]);
+
             session_destroy();
         }
     }

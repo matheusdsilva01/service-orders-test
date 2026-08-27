@@ -30,6 +30,19 @@ class User
             ->find() !== false;
     }
 
+    public function findByEmail(string $email): array|false
+    {
+        return $this->database
+            ->query('
+                    SELECT id_user, name, email, password, ativo
+                    FROM user
+                    WHERE email = :email
+                    LIMIT 1',
+                ['email' => $email]
+            )
+            ->find();
+    }
+
     public function create(CreateUserData $attributes): void
     {
         $this->database->query(

@@ -2,12 +2,14 @@
 
 namespace Core\Middleware;
 
+use Core\Session;
+
 class Authenticated
 {
     public function handle(): void
     {
-        if (!($_SESSION['user'] ?? false)) {
-            redirect('/');
+        if (!Session::get('user')) {
+            redirect('/login');
         }
     }
 }

@@ -5,7 +5,12 @@ use Core\Session;
 
 const BASE_PATH = __DIR__ . '/../';
 
-session_start();
+session_start([
+    'cookie_lifetime' => 0,
+    'cookie_path' => '/',
+    'cookie_httponly' => true,
+    'cookie_samesite' => 'Lax',
+]);
 
 require BASE_PATH . 'Core/functions.php';
 require BASE_PATH . 'autoload.php';
