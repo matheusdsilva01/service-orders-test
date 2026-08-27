@@ -45,7 +45,9 @@ class Router
         $uriMatched = false;
 
         foreach ($this->routes as $route) {
-            if ($route['uri'] !== $uri) {
+            $parameters = $this->match($route['uri'], $uri);
+
+            if ($parameters === false) {
                 continue;
             }
 
@@ -59,7 +61,7 @@ class Router
 
             [$controller, $action] = $route['controller'];
 
-            return (new $controller())->{$action}();
+            return (new $controller())->{$action}(...$parameters);
         }
 
         $this->abort($uriMatched ? Response::METHOD_NOT_ALLOWED : Response::NOT_FOUND);
@@ -75,6 +77,42 @@ class Router
         ];
 
         return $this;
+    }
+
+    private function match(string $routeUri, string $requestUri): array|false
+    {
+        $routeSegments = explode('/', $routeUri);
+        $requestSegments = explode('/', $requestUri);
+
+        if (count($routeSegments) !== count($requestSegments)) {
+            return false;
+        }
+
+        $parameters = [];
+
+        foreach ($routeSegments as $index => $routeSegment) {
+            $requestSegment = $requestSegments[$index];
+
+            $isParameter = preg_match(
+                    '/^\{[a-zA-Z_][a-zA-Z0-9_]*\}$/',
+                    $routeSegment
+                ) === 1;
+
+            if ($isParameter) {
+                if ($requestSegment === '') {
+                    return false;
+                }
+
+                $parameters[] = rawurldecode($requestSegment);
+                continue;
+            }
+
+            if ($routeSegment !== $requestSegment) {
+                return false;
+            }
+        }
+
+        return $parameters;
     }
 
     private function abort(int $code): never
