@@ -1,6 +1,8 @@
 <?php
 
+use App\DTOs\CreateServiceData;
 use App\DTOs\CreateUserData;
+use App\Models\Service;
 use App\Models\User;
 use Core\App;
 use Core\Database;
@@ -34,31 +36,95 @@ $users = [
     ],
 ];
 
+$services = [
+    [
+        'description' => 'Troca de tela de notebook',
+        'price' => '425.000',
+        'user_email' => 'jane.doe@example.com',
+    ],
+    [
+        'description' => 'Instalacao de sistema operacional',
+        'price' => '1500.000',
+        'user_email' => 'john.doe@example.com',
+    ],
+    [
+        'description' => 'Manutencao de servidor',
+        'price' => '12500.000',
+        'user_email' => 'm@email.com',
+    ],
+];
+
 try {
     $database = App::resolve(Database::class);
     $userModel = new User($database);
-    $inserted = 0;
-    $skipped = 0;
+    $serviceModel = new Service($database);
+
+    $usersByEmail = [];
+    $usersInserted = 0;
+    $usersSkipped = 0;
+    $servicesInserted = 0;
+    $servicesSkipped = 0;
 
     foreach ($users as $user) {
         if ($userModel->existsByEmail($user['email'])) {
-            $skipped++;
+            $usersSkipped++;
+        } else {
+            $userModel->create(
+                new CreateUserData(
+                    name: $user['name'],
+                    email: $user['email'],
+                    password: $user['password'],
+                )
+            );
+
+            $usersInserted++;
+        }
+        $storedUser = $userModel->findByEmail($user['email']);
+
+        if (!$storedUser) {
+            throw new RuntimeException(
+                "Usuario {$user['email']} nao encontrado."
+            );
+        }
+
+        $usersByEmail[$user['email']] = $storedUser;
+    }
+
+    foreach ($services as $service) {
+        $user = $usersByEmail[$service['user_email']];
+        $userId = (int)$user['id_user'];
+
+        if (
+            $serviceModel->existsByDescriptionForUser(
+                $service['description'],
+                $userId
+            )
+        ) {
+            $servicesSkipped++;
             continue;
         }
 
-        $userModel->create(
-            new CreateUserData(
-                name: $user['name'],
-                email: $user['email'],
-                password: $user['password'],
+        $serviceModel->create(
+            new CreateServiceData(
+                description: $service['description'],
+                price: $service['price'],
+                userId: $userId,
             )
         );
 
-        $inserted++;
+        $servicesInserted++;
     }
 
-    echo "Seed concluido: {$inserted} inserido(s), {$skipped} ignorado(s).\n";
+    echo "Usuarios: {$usersInserted} inserido(s), "
+        . "{$usersSkipped} ignorado(s).\n";
+
+    echo "Servicos: {$servicesInserted} inserido(s), "
+        . "{$servicesSkipped} ignorado(s).\n";
 } catch (Throwable $exception) {
-    fwrite(STDERR, "Erro ao executar seed: {$exception->getMessage()}\n");
+    fwrite(
+        STDERR,
+        "Erro ao executar seed: {$exception->getMessage()}\n"
+    );
+
     exit(1);
 }
