@@ -65,6 +65,12 @@ body {
     }
 }
 
+.field-error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -217,4 +223,10 @@ th {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.service-edit-page {
+    margin: 0 auto;
+    padding: 0 16px;
+    max-width: 1200px;
 }

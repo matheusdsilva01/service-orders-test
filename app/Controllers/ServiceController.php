@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Domain\CommissionCalculator;
+use App\DTOs\UpdateServiceData;
 use App\Models\Service;
 use Core\App;
 use Core\Database;
@@ -17,6 +18,73 @@ class ServiceController
     {
         $this->database = App::resolve(Database::class);
         $this->calculator = new CommissionCalculator();
+    }
+
+    public function edit(mixed $id): void
+    {
+        if (!Validator::number($id, 1)) {
+            view('errors/404.php');
+            return;
+        }
+
+        $serviceModel = new Service($this->database);
+        $service = $serviceModel->find($id);
+
+        if ($service['finished_at'] !== null) {
+            redirect('/');
+        }
+
+        view('services/edit.php', [
+            'service' => $service,
+            'errors' => [],
+        ]);
+    }
+
+    public function update($id): void
+    {
+        if (!Validator::number($id, 1)) {
+            view('errors/404.php');
+            return;
+        }
+
+        $serviceModel = new Service($this->database);
+        $service = $serviceModel->find($id);
+
+        if ($service['finished_at'] !== null) {
+            redirect('/');
+        }
+
+        $description = $_POST['description'] ?? '';
+        $price = $_POST['price'] ?? '';
+
+        $errors = [];
+
+        if (!Validator::string($description, 1, 45)) {
+            $errors['description'] = 'A descrição deve ter entre 1 e 45 caracteres.';
+        }
+
+        if (!Validator::number($price, 0.001, 99_999_999.999)) {
+            $errors['price'] = 'O valor deve ser um número entre 0.001 e 99999999.999.';
+        }
+
+        if (!empty($errors)) {
+            view('services/edit.php', [
+                'service' => $service,
+                'errors' => $errors,
+                'old' => [
+                    'description' => $description,
+                    'price' => $price,
+                ],
+            ]);
+            return;
+        }
+        $data = new UpdateServiceData(
+            $description,
+            (float)$price
+        );
+        $serviceModel->update($id, $data);
+
+        redirect('/');
     }
 
     public function finish($id): void
@@ -34,7 +102,8 @@ class ServiceController
         redirect('/');
     }
 
-    public function delete(int $id): void
+    public
+    function delete(int $id): void
     {
         if (!Validator::number($id, 1)) {
             redirect('/');

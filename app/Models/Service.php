@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTOs\CreateServiceData;
+use App\DTOs\UpdateServiceData;
 use Core\Database;
 
 class Service
@@ -104,6 +105,23 @@ class Service
                 'description' => $data->description,
                 'price' => $data->price,
                 'user_id' => $data->userId,
+            ]
+        );
+    }
+
+    public function update(int $id, UpdateServiceData $data): void
+    {
+        $this->database->query(
+            <<<'SQL'
+                UPDATE service
+                SET description = :description,
+                    price = :price
+                WHERE id_service = :id
+            SQL,
+            [
+                'id' => $id,
+                'description' => $data->description,
+                'price' => $data->price
             ]
         );
     }
