@@ -55,7 +55,9 @@
             <?php endif; ?>
         </article>
     </section>
-
+    <section class="dashboard-actions">
+        <a class="button button-primary" href="/services/create">Criar serviço</a>
+    </section>
     <?php if (!$services) : ?>
         <p>Nenhum serviço cadastrado.</p>
     <?php else : ?>

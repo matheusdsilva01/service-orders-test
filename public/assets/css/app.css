@@ -192,6 +192,11 @@ body {
     }
 }
 
+.dashboard-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .table-container {
     margin-top: 24px;
     overflow-x: auto;
