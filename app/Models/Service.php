@@ -9,7 +9,32 @@ class Service
 {
     public function __construct(
         private Database $database
-    ) {
+    )
+    {
+    }
+
+    public function all(): array
+    {
+        return $this->database
+            ->query(
+                <<<'SQL'
+                    SELECT
+                        s.id_service,
+                        s.description,
+                        s.price,
+                        s.created_at,
+                        s.update_at,
+                        s.finished_at,
+                        u.name as user_name,
+                        CASE
+                            WHEN finished_at IS NULL THEN 'Pendente'
+                            ELSE 'Finalizado'
+                        END AS status
+                    FROM service as s
+                    INNER JOIN `user` AS u ON u.id_user = s.user_id_user
+                SQL
+            )
+            ->get();
     }
 
     public function find(int $id): array
@@ -40,8 +65,9 @@ class Service
 
     public function existsByDescriptionForUser(
         string $description,
-        int $userId
-    ): bool {
+        int    $userId
+    ): bool
+    {
         return $this->database
                 ->query(
                     <<<'SQL'
@@ -78,6 +104,29 @@ class Service
                 'price' => $data->price,
                 'user_id' => $data->userId,
             ]
+        );
+    }
+
+    public function delete(int $id): void
+    {
+        $this->database->query(
+            <<<'SQL'
+                DELETE FROM service
+                WHERE id_service = :id
+            SQL,
+            ['id' => $id]
+        );
+    }
+
+    public function finish(int $id): void
+    {
+        $this->database->query(
+            <<<'SQL'
+                UPDATE service
+                SET finished_at = NOW()
+                WHERE id_service = :id
+            SQL,
+            ['id' => $id]
         );
     }
 }

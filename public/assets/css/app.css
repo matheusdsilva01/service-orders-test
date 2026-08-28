@@ -19,6 +19,8 @@ body {
 }
 
 .button {
+    display: inline-block;
+    text-decoration: none;
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
@@ -26,14 +28,21 @@ body {
     color: #fff;
     cursor: pointer;
     transition: background 0.3s ease;
+
     &:hover {
         background: var(--bg);
         color: var(--primary);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
     }
 }
 
 .button-secondary {
     background: var(--secondary);
+
     &:hover {
         background: var(--bg);
         color: var(--secondary);
@@ -43,11 +52,13 @@ body {
 .field {
     display: flex;
     flex-direction: column;
+
     & > input {
         margin-top: 8px;
         padding: 8px;
         border: 2px solid var(--gray);
         outline: none;
+
         &:focus {
             border: 2px solid var(--primary);
         }
@@ -61,11 +72,13 @@ body {
     padding: 16px 32px;
     background: var(--secondary);
     color: #fff;
+
     .anchor-home {
         text-decoration: none;
         color: #fff;
         font-weight: bold;
         font-size: 1.2rem;
+
         &:hover {
             text-decoration: underline;
             color: var(--primary);
@@ -76,6 +89,7 @@ body {
         display: flex;
         align-items: center;
         gap: 8px;
+
         .account-name {
             font-weight: bold;
         }
@@ -110,4 +124,37 @@ body {
     margin: 0 auto;
     gap: 16px;
     padding: 16px 32px;
+}
+
+.table-container {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+th,
+td {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 336px;
+    text-overflow: ellipsis;
+    padding: 12px;
+    border: 1px solid var(--gray);
+    text-align: left;
+}
+
+th {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }

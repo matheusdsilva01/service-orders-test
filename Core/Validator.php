@@ -19,4 +19,13 @@ class Validator
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
+
+    public static function number(mixed $value, int|float $min = -INF, int|float $max = INF): bool
+    {
+        if (!is_numeric($value)) {
+            return false;
+        }
+
+        return $value >= $min && $value <= $max;
+    }
 }

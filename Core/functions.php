@@ -53,5 +53,10 @@ function urlIs(string $path): bool
 
 function escapeHtml(mixed $value): string
 {
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
+
+function price_format(float $value): string
+{
+    return number_format($value, 2, ',', '.');
 }
