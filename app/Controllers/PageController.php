@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\Service;
 use Core\App;
-use Core\Container;
 use Core\Database;
 use Core\Session;
 
@@ -19,9 +18,15 @@ class PageController
 
     public function home(): void
     {
+        $userId = Session::get('user')['id'];
+
+        $serviceModel = new Service($this->database);
+
         view('dashboard.php', [
             'user' => Session::get('user'),
-            'services' => new Service($this->database)->all()
+            'services' => $serviceModel->all(),
+            'totalServicePrice' => $serviceModel->totalPriceForUser($userId),
+            'pendingServices' => $serviceModel->latestPendingForUser($userId),
         ]);
     }
 

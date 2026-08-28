@@ -32,6 +32,7 @@ class Service
                         END AS status
                     FROM service as s
                     INNER JOIN `user` AS u ON u.id_user = s.user_id_user
+                    ORDER BY s.created_at DESC, s.id_service DESC
                 SQL
             )
             ->get();
@@ -105,6 +106,43 @@ class Service
                 'user_id' => $data->userId,
             ]
         );
+    }
+
+    public function totalPriceForUser(int $userId): string
+    {
+        $result = $this->database
+            ->query(
+                <<<'SQL'
+                SELECT COALESCE(SUM(price), 0.000) AS total
+                FROM service
+                WHERE user_id_user = :user_id
+            SQL,
+                ['user_id' => $userId]
+            )
+            ->find();
+
+        return $result['total'];
+    }
+
+    public function latestPendingForUser(int $userId): array
+    {
+        return $this->database
+            ->query(
+                <<<'SQL'
+                SELECT
+                    id_service,
+                    description,
+                    price,
+                    created_at
+                FROM service
+                WHERE user_id_user = :user_id
+                  AND finished_at IS NULL
+                ORDER BY created_at DESC, id_service DESC
+                LIMIT 3
+            SQL,
+                ['user_id' => $userId]
+            )
+            ->get();
     }
 
     public function delete(int $id): void

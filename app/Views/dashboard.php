@@ -9,6 +9,9 @@
 
     <div class="account">
         <div>
+            <p><?= date('d/m/Y H:i') ?></p>
+        </div>
+        <div>
             <p class="account-name"><?= escapeHtml($user['name']) ?></p>
         </div>
 
@@ -20,6 +23,39 @@
 </header>
 
 <main class="dashboard-container">
+    <section class="dashboard-summary">
+        <article class="summary-card summary-total">
+            <p>Valor total dos seus serviços</p>
+            <h2>
+                R$ <?= escapeHtml(price_format($totalServicePrice)) ?>
+            </h2>
+        </article>
+
+        <article class="summary-card">
+            <h2>Últimos serviços pendentes</h2>
+
+            <?php if (!$pendingServices) : ?>
+                <p>Você não possui serviços pendentes.</p>
+            <?php else : ?>
+                <ul class="pending-list">
+                    <?php foreach ($pendingServices as $pendingService) : ?>
+                        <li>
+                        <span>
+                            #<?= escapeHtml($pendingService['id_service']) ?>
+                            -
+                            <?= escapeHtml($pendingService['description']) ?>
+                        </span>
+
+                            <strong>
+                                R$ <?= escapeHtml(price_format($pendingService['price'])) ?>
+                            </strong>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </article>
+    </section>
+
     <?php if (!$services) : ?>
         <p>Nenhum serviço cadastrado.</p>
     <?php else : ?>
