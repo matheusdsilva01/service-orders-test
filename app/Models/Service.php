@@ -118,15 +118,19 @@ class Service
         );
     }
 
-    public function finish(int $id): void
+    public function finish(int $id, string $commission): void
     {
         $this->database->query(
             <<<'SQL'
                 UPDATE service
-                SET finished_at = NOW()
+                SET finished_at = NOW(),
+                    commission_user = :commission
                 WHERE id_service = :id
             SQL,
-            ['id' => $id]
+            [
+                'id' => $id,
+                'commission' => $commission
+            ]
         );
     }
 }

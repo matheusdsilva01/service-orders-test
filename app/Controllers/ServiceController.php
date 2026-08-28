@@ -2,21 +2,21 @@
 
 namespace App\Controllers;
 
-use App\DTOs\CreateUserData;
+use App\Domain\CommissionCalculator;
 use App\Models\Service;
-use App\Models\User;
 use Core\App;
 use Core\Database;
 use Core\Validator;
-use PDOException;
 
 class ServiceController
 {
     private Database $database;
+    private CommissionCalculator $calculator;
 
     public function __construct()
     {
         $this->database = App::resolve(Database::class);
+        $this->calculator = new CommissionCalculator();
     }
 
     public function finish($id): void
@@ -26,8 +26,10 @@ class ServiceController
         }
 
         $serviceModel = new Service($this->database);
-        $serviceModel->find($id);
-        $serviceModel->finish($id);
+        $service = $serviceModel->find($id);
+        $commission = $this->calculator->calculate($service['price']);
+
+        $serviceModel->finish($id, $commission);
 
         redirect('/');
     }
