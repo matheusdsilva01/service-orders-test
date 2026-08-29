@@ -14,8 +14,14 @@ class Service
     {
     }
 
-    public function all(): array
+    public function all(array $filters): array
     {
+        $startDate = $filters['startDate'] !== '' ? $filters['startDate'] : null;
+        $endDate = $filters['endDate'] !== '' ? $filters['endDate'] : null;
+        $status = $filters['status'] !== '' ? $filters['status'] : null;
+        $serviceName = $filters['serviceName'] !== '' ? $filters['serviceName'] : null;
+        $userName = $filters['userName'] !== '' ? $filters['userName'] : null;
+
         return $this->database
             ->query(
                 <<<'SQL'
@@ -33,8 +39,21 @@ class Service
                         END AS status
                     FROM service as s
                     INNER JOIN `user` AS u ON u.id_user = s.user_id_user
+                    WHERE 1=1
+                        AND (:start_date IS NULL OR s.created_at >= :start_date)
+                        AND (:end_date IS NULL OR s.created_at < DATE_ADD(:end_date, INTERVAL 1 DAY))
+                        AND (:status IS NULL OR (:status = 'pending' AND s.finished_at IS NULL) OR (:status = 'finished' AND s.finished_at IS NOT NULL))
+                        AND (:service_name IS NULL OR LOWER(s.description) LIKE LOWER(CONCAT('%', :service_name, '%')))
+                        AND (:user_name IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :user_name, '%')))
                     ORDER BY s.created_at DESC, s.id_service DESC
-                SQL
+                SQL,
+                [
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'status' => $status,
+                    'service_name' => $serviceName,
+                    'user_name' => $userName,
+                ]
             )
             ->get();
     }

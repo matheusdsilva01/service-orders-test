@@ -6,7 +6,7 @@ final readonly class UpdateServiceData
 {
     public function __construct(
         public string $description,
-        public float  $price,
+        public string $price,
     )
     {
     }

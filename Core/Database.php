@@ -29,6 +29,16 @@ class Database
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]
         );
+
+        if (isset($config['timezone'])) {
+            $statement = $this->connection->prepare(
+                'SET time_zone = :timezone'
+            );
+
+            $statement->execute([
+                'timezone' => $config['timezone'],
+            ]);
+        }
     }
 
     public function query(string $query, array $parameters = []): self

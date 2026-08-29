@@ -8,7 +8,9 @@
         <section class="login-form-container">
             <h1>Entrar</h1>
             <?php if (isset($errors['credentials'])) : ?>
-                <p><?= escapeHtml($errors['credentials']) ?></p>
+            <div class="field-error-container">
+                <p class="field-error"><?= escapeHtml($errors['credentials']) ?></p>
+            </div>
             <?php endif; ?>
 
             <form class="form"
@@ -25,9 +27,6 @@
                         <?= isset($errors['email']) ? 'aria-invalid="true" aria-describedby="email-error"' : '' ?>
                         required
                     >
-                    <?php if (isset($errors['email'])) : ?>
-                        <p id="email-error"><?= escapeHtml($errors['email']) ?></p>
-                    <?php endif; ?>
                 </div>
 
                 <div class="field">
@@ -41,9 +40,6 @@
                         <?= isset($errors['password']) ? 'aria-invalid="true" aria-describedby="password-error"' : '' ?>
                         required
                     >
-                    <?php if (isset($errors['password'])) : ?>
-                        <p id="password-error"><?= escapeHtml($errors['password']) ?></p>
-                    <?php endif; ?>
                 </div>
 
                 <button class="button" type="submit">Entrar</button>

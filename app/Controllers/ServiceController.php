@@ -57,7 +57,7 @@ class ServiceController
         $authUserId = Session::get('user')['id'];
 
         $data = new CreateServiceData(
-            $description,
+            trim($description),
             $price,
             $authUserId
         );
@@ -66,11 +66,10 @@ class ServiceController
         redirect('/');
     }
 
-    public function edit(mixed $id): void
+    public function edit(string $id): void
     {
-        if (!Validator::number($id, 1)) {
-            view('errors/404.php');
-            return;
+        if (!Validator::positiveInteger($id, 1)) {
+            abort();
         }
 
         $serviceModel = new Service($this->database);
@@ -86,11 +85,10 @@ class ServiceController
         ]);
     }
 
-    public function update($id): void
+    public function update(string $id): void
     {
-        if (!Validator::number($id, 1)) {
-            view('errors/404.php');
-            return;
+        if (!Validator::positiveInteger($id, 1)) {
+            abort();
         }
 
         $serviceModel = new Service($this->database);
@@ -125,18 +123,18 @@ class ServiceController
             return;
         }
         $data = new UpdateServiceData(
-            $description,
-            (float)$price
+            trim($description),
+            $price
         );
         $serviceModel->update($id, $data);
 
         redirect('/');
     }
 
-    public function finish($id): void
+    public function finish(string $id): void
     {
-        if (!Validator::number($id, 1)) {
-            redirect('/');
+        if (!Validator::positiveInteger($id, 1)) {
+            abort();
         }
 
         $serviceModel = new Service($this->database);
@@ -148,10 +146,10 @@ class ServiceController
         redirect('/');
     }
 
-    public function delete(int $id): void
+    public function delete(string $id): void
     {
-        if (!Validator::number($id, 1)) {
-            redirect('/');
+        if (!Validator::positiveInteger($id, 1)) {
+            abort();
         }
 
         $serviceModel = new Service($this->database);

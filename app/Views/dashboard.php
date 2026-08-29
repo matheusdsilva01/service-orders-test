@@ -58,8 +58,115 @@
     <section class="dashboard-actions">
         <a class="button button-primary" href="/services/create">Criar serviço</a>
     </section>
+    <section class="filters-card">
+        <div>
+            <h2 class="filters-title">Filtrar serviços</h2>
+        </div>
+        <?php if ($filterErrors) : ?>
+            <div class="filter-errors">
+                <?php foreach ($filterErrors as $error) : ?>
+                    <p><?= escapeHtml($error) ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+        <form action="/" method="GET" class="filters-form">
+            <div class="filters-grid">
+                <div class="field">
+                    <label for="start_date">
+                        Data inicial
+                    </label>
+
+                    <input
+                            id="start_date"
+                            name="start_date"
+                            type="date"
+                            value="<?= escapeHtml($filterValues['start_date'] ?? '') ?>"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="end_date">
+                        Data final
+                    </label>
+
+                    <input
+                            id="end_date"
+                            name="end_date"
+                            type="date"
+                            value="<?= escapeHtml($filterValues['end_date'] ?? '') ?>"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="service_name">
+                        Nome do serviço
+                    </label>
+
+                    <input
+                            id="service_name"
+                            name="service_name"
+                            type="search"
+                            maxlength="45"
+                            placeholder="Ex.: Manutenção"
+                            value="<?= escapeHtml($filterValues['service_name'] ?? '') ?>"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select id="status" name="status">
+                        <option value="">
+                            Todos
+                        </option>
+
+                        <option
+                                value="pending"
+                                <?= (($filterValues['status'] ?? '') === 'pending') ? 'selected' : '' ?>
+                        >
+                            Pendente
+                        </option>
+
+                        <option
+                                value="finished"
+                                <?= (($filterValues['status'] ?? '') === 'finished') ? 'selected' : '' ?>
+                        >
+                            Finalizado
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="user_name">
+                        Nome do usuário
+                    </label>
+
+                    <input
+                            id="user_name"
+                            name="user_name"
+                            type="search"
+                            maxlength="150"
+                            placeholder="Ex.: João"
+                            value="<?= escapeHtml($filterValues['user_name'] ?? '') ?>"
+                    >
+                </div>
+            </div>
+
+            <div class="filters-actions">
+                <button class="button" type="submit">
+                    Filtrar
+                </button>
+
+                <a class="button button-secondary" href="/">
+                    Limpar
+                </a>
+            </div>
+        </form>
+    </section>
     <?php if (!$services) : ?>
-        <p>Nenhum serviço cadastrado.</p>
+        <p class="empty-state">Nenhum serviço encontrado.</p>
     <?php else : ?>
         <div class="table-container">
             <table>
