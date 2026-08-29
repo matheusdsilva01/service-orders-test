@@ -10,6 +10,7 @@ use Core\App;
 use Core\Database;
 use Core\Session;
 use Core\Validator;
+use PDOException;
 
 class ServiceController
 {
@@ -43,14 +44,12 @@ class ServiceController
         }
 
         if (!empty($errors)) {
-            view('services/create.php', [
-                'errors' => $errors,
-                'old' => [
-                    'description' => $description,
-                    'price' => $price,
-                ],
+            Session::flash('message', [
+                'type' => 'error',
+                'text' => 'Não foi possível cadastrar o serviço.',
             ]);
-            return;
+
+            redirect('/');
         }
 
         $serviceModel = new Service($this->database);
@@ -61,7 +60,21 @@ class ServiceController
             $price,
             $authUserId
         );
-        $serviceModel->create($data);
+        try {
+            $serviceModel->create($data);
+        } catch (PDOException) {
+            Session::flash('message', [
+                'type' => 'error',
+                'text' => 'Não foi possível cadastrar o serviço.',
+            ]);
+
+            redirect('/');
+        }
+
+        Session::flash('message', [
+            'type' => 'success',
+            'text' => 'Serviço cadastrado com sucesso.',
+        ]);
 
         redirect('/');
     }

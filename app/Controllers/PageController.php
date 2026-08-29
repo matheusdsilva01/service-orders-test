@@ -82,6 +82,7 @@ class PageController
         view('dashboard.php', [
             'user' => Session::get('user'),
             'filterErrors' => $filterErrors,
+            'flashMessage' => Session::get('message'),
             'services' => $serviceModel->all($filters),
             'totalServicePrice' => $serviceModel->totalPriceForUser($userId),
             'filterValues' => $filtersValues,

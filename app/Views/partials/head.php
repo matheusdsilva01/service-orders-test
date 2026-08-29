@@ -6,4 +6,4 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
 <link rel="stylesheet" href="/assets/css/app.css">
-
+<script src="/assets/js/app.js" defer></script>

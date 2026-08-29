@@ -22,6 +22,8 @@
     </div>
 </header>
 
+<?php require view_path('partials/toast.php') ?>
+
 <main class="dashboard-container">
     <section class="dashboard-summary">
         <article class="summary-card summary-total">
