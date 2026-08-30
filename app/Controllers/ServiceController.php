@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Contracts\Mailer;
 use App\Domain\CommissionCalculator;
 use App\DTOs\CreateServiceData;
 use App\DTOs\UpdateServiceData;
 use App\Models\Service;
+use App\Models\User;
 use Core\App;
 use Core\Database;
 use Core\Session;
@@ -17,10 +19,13 @@ class ServiceController
     private Database $database;
     private CommissionCalculator $calculator;
 
+    private Mailer $mailer;
+
     public function __construct()
     {
         $this->database = App::resolve(Database::class);
         $this->calculator = new CommissionCalculator();
+        $this->mailer = App::resolve(Mailer::class);
     }
 
     public function create(): void
@@ -155,8 +160,44 @@ class ServiceController
         $commission = $this->calculator->calculate($service['price']);
 
         $serviceModel->finish($id, $commission);
-
+        $service['commission_user'] = $commission;
+        $this->sendMail($service);
         redirect('/');
+    }
+
+    private function sendMail(array $service): void
+    {
+        $userModel = new User($this->database);
+        $serviceUser = $userModel->findContact(
+            (int)$service['user_id_user']
+        );
+
+        $body = sprintf(
+            "Olá, %s.\n\n"
+            . "O serviço #%s foi finalizado.\n"
+            . "Descrição: %s\n"
+            . "Valor: R$ %s\n"
+            . "Comissão: R$ %s\n"
+            . "Finalizado em: %s\n",
+            $serviceUser['name'],
+            $service['id_service'],
+            $service['description'],
+            price_format($service['price']),
+            price_format($service['commission_user']),
+            date('d/m/Y H:i')
+        );
+        $emailWasSent = $this->mailer->send(
+            $serviceUser['email'],
+            'Serviço finalizado',
+            $body
+        );
+
+        Session::flash('message', [
+            'type' => $emailWasSent ? 'success' : 'error',
+            'text' => $emailWasSent
+                ? 'Serviço finalizado e e-mail enviado.'
+                : 'Serviço finalizado, mas o e-mail não pôde ser enviado.',
+        ]);
     }
 
     public function delete(string $id): void

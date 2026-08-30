@@ -1,5 +1,7 @@
 <?php
 
+use App\Contracts\Mailer;
+use App\Services\NativeMailer;
 use Core\App;
 use Core\Container;
 use Core\Database;
@@ -14,6 +16,12 @@ $container->bind(Database::class, function (): Database {
     $config = require base_path('config.php');
 
     return new Database($config['database']);
+});
+
+$container->bind(Mailer::class, function (): Mailer {
+    $config = require base_path('config.php');
+
+    return new NativeMailer($config['mail']);
 });
 
 App::setContainer($container);

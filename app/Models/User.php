@@ -9,7 +9,8 @@ class User
 {
     public function __construct(
         private Database $database
-    ) {
+    )
+    {
     }
 
     public function find(int $id): array
@@ -24,10 +25,10 @@ class User
     public function existsByEmail(string $email): bool
     {
         return $this->database
-            ->query('SELECT 1 FROM user WHERE email = :email', [
-                'email' => $email,
-            ])
-            ->find() !== false;
+                ->query('SELECT 1 FROM user WHERE email = :email', [
+                    'email' => $email,
+                ])
+                ->find() !== false;
     }
 
     public function findByEmail(string $email): array|false
@@ -53,5 +54,22 @@ class User
                 'password' => password_hash($attributes->password, PASSWORD_BCRYPT),
             ]
         );
+    }
+
+    public function findContact(int $id): array
+    {
+        return $this->database
+            ->query(
+                <<<'SQL'
+                SELECT
+                    id_user,
+                    name,
+                    email
+                FROM `user`
+                WHERE id_user = :id
+            SQL,
+                ['id' => $id]
+            )
+            ->findOrFail();
     }
 }
