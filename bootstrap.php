@@ -6,6 +6,8 @@ use Core\App;
 use Core\Container;
 use Core\Database;
 
+loadEnv(base_path('.env'));
+
 $container = new Container();
 
 $config = require base_path('config.php');

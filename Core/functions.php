@@ -10,6 +10,44 @@ function dd(mixed $value): never
     exit;
 }
 
+function loadEnv(string $path): void
+{
+    if (!is_file($path)) {
+        return;
+    }
+
+    $variables = parse_ini_file(
+        $path,
+        false,
+        INI_SCANNER_RAW
+    );
+
+    if ($variables === false) {
+        throw new RuntimeException(
+            "Não foi possível carregar {$path}."
+        );
+    }
+
+    foreach ($variables as $key => $value) {
+        if (getenv($key) !== false) {
+            continue;
+        }
+
+        $value = (string)$value;
+
+        putenv("{$key}={$value}");
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+    }
+}
+
+function env(string $key, mixed $default = null): mixed
+{
+    $value = getenv($key);
+
+    return $value === false ? $default : $value;
+}
+
 function base_path(string $path = ''): string
 {
     return BASE_PATH . $path;

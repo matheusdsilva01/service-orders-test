@@ -2,21 +2,21 @@
 
 return [
     'app' => [
-        'timezone' => 'America/Sao_Paulo',
+        'timezone' => env('APP_TIMEZONE', 'America/Sao_Paulo'),
     ],
     'database' => [
-        'host' => 'localhost',
-        'port' => 3306,
-        'dbname' => 'myapp',
-        'charset' => 'utf8mb4',
-        'username' => 'root',
-        'password' => 'root',
-        'timezone' => '-03:00',
+        'host' => env('DB_HOST', 'localhost'),
+        'port' => (int)env('DB_PORT', 3306),
+        'dbname' => env('DB_NAME', 'myapp'),
+        'charset' => env('DB_CHARSET', 'utf8mb4'),
+        'username' => env('DB_USERNAME', 'root'),
+        'password' => env('DB_PASSWORD', ''),
+        'timezone' => env('DB_TIMEZONE', '-03:00'),
     ],
     'mail' => [
-        'host' => '127.0.0.1',
-        'port' => 1025,
-        'from_address' => 'no-reply@service-orders.com',
-        'from_name' => 'Service Orders',
+        'host' => env('MAIL_HOST', '127.0.0.1'),
+        'port' => (int)env('MAIL_PORT', 1025),
+        'from_address' => env('MAIL_FROM_ADDRESS', 'no-reply@service-orders.com'),
+        'from_name' => env('MAIL_FROM_NAME', 'Service Orders'),
     ],
 ];
